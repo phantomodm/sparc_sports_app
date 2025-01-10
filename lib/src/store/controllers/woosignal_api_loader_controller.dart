@@ -1,0 +1,55 @@
+//  Label StoreMax
+//
+//  Created by Anthony Gordon.
+//  2023, WooSignal Ltd. All rights reserved.
+//
+
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
+import 'package:sparc_sports_app/src/store/bloc/product_bloc.dart';
+import 'package:sparc_sports_app/src/core/bloc/locator.dart';
+import 'package:sparc_sports_app/src/store/helpers/helpers.dart';
+import 'package:woosignal/models/response/product.dart';
+import 'package:woosignal/woosignal.dart';
+
+class WooSignalApiLoaderController<T> {
+  List<T> _results = [];
+  int page = 1;
+  bool _waitForNextRequest = false;
+  ProductBloc productBloc = locator<ProductBloc>();
+
+  WooSignalApiLoaderController();
+
+  Future<void> load(
+      {required bool Function(bool hasProducts) hasResults,
+      required void Function() didFinish,
+      required Future<List<T>> Function(WooSignal query) apiQuery}) async {
+    if (_waitForNextRequest) {
+      return;
+    }
+    _waitForNextRequest = true;
+
+    List<T> apiResults = await (appWooSignal((api) => apiQuery(api)));
+
+    if (!hasResults(apiResults.isNotEmpty)) {
+      return;
+    }
+
+    _results.addAll(apiResults);
+    productBloc.add(UpdateProducts(apiResults.cast<Product>()));
+
+    page = page + 1;
+    _waitForNextRequest = false;
+    didFinish();
+  }
+
+  List<T> getResults() => _results;
+
+  void clear() {
+    _results = [];
+    _waitForNextRequest = false;
+    page = 1;
+  }
+}
