@@ -1,7 +1,4 @@
-// create_group_chat_screen.dart
-
 import 'package:flutter/material.dart';
-import 'package:sparc_sports_app/src/sparc/chat/services/chat_service.dart'; // Import your theme and models
 
 class CreateGroupChatScreen extends StatefulWidget {
   const CreateGroupChatScreen({Key? key}) : super(key: key);
@@ -13,7 +10,7 @@ class CreateGroupChatScreen extends StatefulWidget {
 class _CreateGroupChatScreenState extends State<CreateGroupChatScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _membersController = TextEditingController(); // For adding members (comma-separated IDs or emails)
+  final _membersController = TextEditingController();
 
   @override
   void dispose() {
@@ -71,28 +68,20 @@ class _CreateGroupChatScreenState extends State<CreateGroupChatScreen> {
 
   Future<void> _createGroupChat() async {
     try {
-      // TODO: Parse member IDs or emails from _membersController.text
+      // Parse member IDs or emails
       final members = _membersController.text
           .split(',')
           .map((member) => member.trim())
           .where((member) => member.isNotEmpty)
           .toList();
 
-      // Validate member IDs or emails
-      final invalidMembers = await _validateMembers(members);
-      if (invalidMembers.isNotEmpty) {
-        // Show an error message indicating invalid members
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Invalid members: ${invalidMembers.join(', ')}')),
-        );
-        return;
-      }
+      // TODO: Validate member IDs or emails
 
       final groupChat = Chat(
-        id: '', // Generate a unique ID
+        id: const Uuid().v4(), // Generate a unique ID
         type: 'group',
         name: _nameController.text,
-        members: members, // Add parsed member IDs here
+        members: members,
       );
 
       await ChatService().createGroupChat(groupChat);
@@ -108,16 +97,5 @@ class _CreateGroupChatScreenState extends State<CreateGroupChatScreen> {
         SnackBar(content: Text('Error creating group chat: $e')),
       );
     }
-  }
-
-  Future<List<String>> _validateMembers(List<String> members) async {
-    List<String> invalidMembers = [];
-    for (final member in members) {
-      final isValid = await _isValidMember(member); // Implement _isValidMember in your AuthService or UserService
-      if (!isValid) {
-        invalidMembers.add(member);
-      }
-    }
-    return invalidMembers;
   }
 }

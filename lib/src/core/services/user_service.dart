@@ -19,4 +19,9 @@ class UserService {
       // TODO: Handle error appropriately
     }
   }
+
+  isValidMember(String member){
+
+    return true;
+  }
 }

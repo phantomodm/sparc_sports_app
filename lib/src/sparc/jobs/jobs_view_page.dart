@@ -1,6 +1,6 @@
 import 'package:add_2_calendar/add_2_calendar.dart';
-import 'package:flutter/material.dart'
-import 'package:sparc_sports_app/src/core/resources/widgests/filter_widget.dart';;
+import 'package:flutter/material.dart';
+import 'package:sparc_sports_app/src/core/resources/widgests/filter_widget.dart';
 import 'package:sparc_sports_app/src/core/themes/themes.dart';
 import 'package:sparc_sports_app/src/sparc/events/services/events_service.dart';
 import 'package:sparc_sports_app/src/sparc/jobs/services/jobs_services.dart';

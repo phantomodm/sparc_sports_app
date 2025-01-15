@@ -7,11 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:open_file/open_file.dart';
 import 'package:sparc_sports_app/src/core/services/image_service.dart';
+import 'package:sparc_sports_app/src/core/services/user_service.dart';
+import 'package:sparc_sports_app/src/sparc/chat/models/chat_message_models.dart';
 import 'package:sparc_sports_app/src/sparc/chat/services/chat_service.dart';
 import 'package:video_player/video_player.dart';
 
 class ChatScreen extends StatefulWidget {
-  final ChatMessage chat;
+  final Chat chat;
 
   const ChatScreen({Key? key, required this.chat}) : super(key: key);
 
@@ -269,8 +271,17 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessageTile(ChatMessage message) {
     final bool isMe = message.senderId == _authService.getCurrentUser()!.uid;
-
-    return ListTile(
+    InkWell(
+        onTap: () {
+          // Navigate to UserProfileScreen for the message sender
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => UserProfileScreen(authUser: _getAuthUser(message.senderId)), // Assuming you have a way to get AuthUser by ID
+            ),
+          );
+        },
+    child: ListTile(
       title: message.type == 'text'
           ? Text(message.content) // Display text message
           : (message.type == 'image'
@@ -280,19 +291,36 @@ class _ChatScreenState extends State<ChatScreen> {
           : _buildFileAttachment(message.fileUrl!))), // Display file attachment
       leading: isMe
           ? null
-          : CircleAvatar(
-        backgroundImage: NetworkImage(_getUserAvatarUrl(message.senderId)), // Fetch avatar URL
-      ),,
+          : FutureBuilder<String>( // Use FutureBuilder to fetch avatar URL
+        future: _getUserAvatarUrl(message.senderId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircleAvatar(
+              child: CircularProgressIndicator(), // Show loading indicator while fetching
+            );
+          } else if (snapshot.hasError) {
+            return CircleAvatar(
+              child: Icon(Icons.error), // Show error icon if fetching fails
+            );
+          } else {
+            return CircleAvatar(
+              backgroundImage: NetworkImage(snapshot.data!),
+            );
+          }
+        },
+      ),
       trailing: isMe
           ? CircleAvatar(
       backgroundImage: NetworkImage(_authService.getCurrentUser()!.photoURL ?? ''), // Use current user's avatar
     )
           : null,
-    );
+    ))
+    ;
   }
-  String _getUserAvatarUrl(String userId) {
+  Future<String> _getUserAvatarUrl(String userId) async {
     // TODO: Fetch user avatar URL from database or user object
-    return ''; // Replace with actual implementation
+    final user = await UserService().getUser(userId); // Assuming you have a getUser method in UserService
+    return user.profileImageUrl;
   }
   Widget _buildVideoPlayer(String videoUrl) {
     final VideoPlayerController _controller = VideoPlayerController.networkUrl(

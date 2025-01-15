@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sparc_sports_app/sparc_sports_app.dart';
 import 'package:sparc_sports_app/src/core/resources/widgests/filter_widget.dart';
+import 'package:sparc_sports_app/src/sparc/groups/bloc/groups_bloc.dart';
 import 'package:sparc_sports_app/src/sparc/groups/services/groups_service.dart'; // Import your theme and models
 
 class MyGroupsScreen extends StatefulWidget {
@@ -116,11 +118,14 @@ class _MyGroupsScreenState extends State<MyGroupsScreen> {
         );
       },
     );
+  };
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocProvider(
+      create: (context) => GroupsBloc(groupService: GroupService()),
+      child: Scaffold(
       appBar: AppBar(
         title: const Text('My Groups'),
           actions: [
@@ -147,55 +152,48 @@ class _MyGroupsScreenState extends State<MyGroupsScreen> {
             ),
           ]
       ),
-
-      body:
-      FutureBuilder<List<Group>>(
-        future: _searchText.isEmpty
-            ? GroupService().getGroupsForUser(_authService.getCurrentUser()!.uid)
-            : GroupService().searchGroups(_searchText),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text('You haven\'t joined any groups yet. Create or join a group to connect with others.'),
-            );
-          } else {
-            return ListView.builder(
-              controller: _scrollController,
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                final group = snapshot.data![index];
-                return Column(
-                  children: [
-                    _buildGroupCard(group),
-                    const SizedBox(height: 8),
-                  ],
-                );
-              },
-            );
+      body: BlocBuilder<GroupsBloc, GroupsState>(
+        builder: (context, state){
+          switch (state){
+            case GroupsLoading():
+              return const Center(child: CircularProgressIndicator());
+              case GroupsLoaded():
+                _allGroups = state.groups;
+                _filteredGroups = state.groups;
+                if(state.groups.isEmpty){
+                  return const Center(
+                  child: Text('You haven\'t joined any groups yet. Create or join a group to connect with others.'),
+                  );
+                } else {
+                  return ListView.builder(
+                    controller: _scrollController,
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      final group = snapshot.data![index];
+                      return Column(
+                        children: [
+                        _buildGroupCard(group),
+                        const SizedBox(height: 8),
+                        ],
+                      );
+                    },
+                  );
+                }
+                case GroupsError():
+                  return Center(child: Text('Error: ${state.error}'));
+                default:
+                  return Container();
           }
-        },
+        }
       ),
-      /*_groups.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder( // Use ListView.builder for virtual scrolling
-        controller: _scrollController,
-        itemCount: _groups.length,
-        itemBuilder: (context, index) {
-          final group = _groups[index];
-          return _buildGroupCard(group);
-        },
-      ),*/
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // TODO: Navigate to CreateGroupScreen
         },
         child: const Icon(Icons.add),
       ),
-    );
+    )
+   );
   }
 
   Widget _buildGroupCard(Group group) {

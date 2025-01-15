@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:sparc_sports_app/src/sparc/chat/chat_screen.dart';
 import 'package:sparc_sports_app/src/sparc/chat/create_channel_screen.dart';
 import 'package:sparc_sports_app/src/sparc/chat/create_group_chat_screen.dart';
+import 'package:sparc_sports_app/src/sparc/chat/models/chat_message_models.dart';
 import 'package:sparc_sports_app/src/sparc/chat/services/chat_service.dart';
 
 class ChatListScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ class ChatListScreen extends StatefulWidget {
 }
 
 class _ChatListScreenState extends State<ChatListScreen> {
-  List<ChatMessage> _chats = [];
+  List<Chat> _chats = [];
 
   @override
   void initState() {
@@ -34,6 +35,14 @@ class _ChatListScreenState extends State<ChatListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chats'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person_add),
+            onPressed: () {
+              // TODO: Navigate to UserSelectionScreen to choose a user
+            },
+          ),
+        ],
       ),
       body: DefaultTabController( // Use DefaultTabController for tabs
         length: 4, // Number of tabs (global, channels, direct, group)
@@ -61,45 +70,44 @@ class _ChatListScreenState extends State<ChatListScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Show a modal bottom sheet with options to create a channel or group chat
-          showModalBottomSheet(
-            context: context,
-            builder: (context) {
-              return Wrap(
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.public),
-                    title: const Text('Create Channel'),
-                    onTap: () {
-                      Navigator.pop(context); // Close the modal
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const CreateChannelScreen()),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.group),
-                    title: const Text('Create Group Chat'),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const CreateGroupChatScreen()),
-                      );
+        // In chat_list_screen.dart
 
-                      // TODO: Navigate to CreateGroupChatScreen
-                    },
-                  ),
-                ],
-              );
-            },
-          );
-        },
-        child: const Icon(Icons.add),
-      ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return Wrap(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.public),
+                      title: const Text('Create Channel'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const CreateChannelScreen()),
+                        );
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.group),
+                      title: const Text('Create Group Chat'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const CreateGroupChatScreen()),
+                        );
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          child: const Icon(Icons.add),
+        ),,
     );
   }
 
@@ -126,17 +134,26 @@ class _ChatListScreenState extends State<ChatListScreen> {
     );
   }
 
-  Widget _buildChatTile(ChatMessage chat) {
+  Widget _buildChatTile(dynamic chat) {
+    return FutureBuilder(
+        future: chatFuture,
+        builder: builder: (context, snapshot){
+          if(snapshot.connectionState == ConnectionState.waiting){
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError){
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.dta!.isEmpty) {
+            return const Center(
+              child: Text("No Chats found. l")
+            )
+          }
+    })
     return ListTile(
       leading: CircleAvatar(
         // TODO: Display chat avatar (if available)
       ),
-      title: Text(chat.name ?? 'Unnamed Chat'), // Display chat name or "Unnamed Chat"
-      subtitle: Text(
-        chat.lastMessage?.content ?? '', // Display last message content or empty string
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
+      title: Text(chat.type), // Display chat name or "Unnamed Chat"
+
       onTap: () {
         // Navigate to ChatScreen
         Navigator.push(
