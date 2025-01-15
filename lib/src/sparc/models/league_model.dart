@@ -1,4 +1,6 @@
 // League model
+import 'package:freezed_annotation/freezed_annotation.dart';
+
 class League {
   final int leagueId;
   final String docRef;
@@ -404,6 +406,7 @@ class BallField {
 }
 
 // Team model
+@JsonSerializable()
 class Team {
   final String? id;
   final String? teamid;
@@ -465,38 +468,9 @@ class Team {
     required this.uniqueId,
   });
 
-  factory Team.fromJson(Map<String, dynamic> json) {
-    return Team(
-      id: json['id'],
-      teamid: json['teamid'],
-      docRef: json['docRef'],
-      divisionId: json['divisionId'],
-      teamAdmin: List<String>.from(json['teamAdmin']),
-      age: json['age'],
-      name: json['name'],
-      userName: json['userName'],
-      logoUrl: json['logoUrl'],
-      description: json['description'],
-      manager: json['manager'],
-      homeField: json['homeField'] != null ? BallField.fromJson(json['homeField']) : null,
-      country: json['country'],
-      state: json['state'],
-      city: json['city'],
-      zip: json['zip'],
-      phone: json['phone'],
-      email: json['email'],
-      website: json['website'],
-      travelTeam: json['travelTeam'],
-      followers: (json['followers'] as List?)?.map((followerJson) => Follower.fromJson(followerJson)).toList(),
-      following: (json['following'] as List?)?.map((followingJson) => Following.fromJson(followingJson)).toList(),
-      longitude: json['longitude'],
-      latitude: json['latitude'],
-      teamScheduledGames: (json['teamScheduledGames'] as List).map((gameJson) => TeamScheduledGame.fromJson(gameJson)).toList(),
-      teamPlayers: (json['teamPlayers'] as List?)?.map((playerJson) => Player.fromJson(playerJson)).toList(),
-      userId: json['userId'],
-      uniqueId: json['uniqueId'],
-    );
-  }
+  factory Teams.fromJson(Map<String, dynamic> json) => _$TeamsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TeamsToJson(this);
 }
 
 // TeamScheduledGame model (nested within Team)
@@ -536,6 +510,7 @@ class TeamScheduledGame {
 }
 
 // Player model
+@JsonSerializable()
 class Player {
   final String? id;
   final String? userId;
@@ -599,42 +574,13 @@ class Player {
     this.photoURL,
   });
 
-  factory Player.fromJson(Map<String, dynamic> json) {
-    return Player(
-      id: json['id'],
-      userId: json['userId'],
-      playerId: json['playerId'],
-      firstName: json['firstName'],
-      lastName: json['lastName'],
-      activePlayer: json['activePlayer'],
-      ageGroup: json['ageGroup'],
-      positions: json['positions']?.cast<String>(),
-      throws: json['throws'],
-      bats: json['bats'],
-      gender: json['gender'],
-      geohash: json['geohash'],
-      height: json['height'],
-      weight: json['weight'],
-      country: json['country'],
-      state: json['state'],
-      city: json['city'],
-      docRef: json['docRef'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
-      sports: json['sports'],
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-      skillLevel: json['skillLevel']?.cast<String>(),
-      gamesPerWeek: json['gamesPerWeek'],
-      transportation: json['transportation']?.cast<String>(),
-      playerStats: (json['playerStats'] as List?)?.map((statsJson) => GameStats.fromJson(statsJson)).toList(),
-      teamsPlayed: json['teamsPlayed']?.cast<String>(),
-      teams: (json['teams'] as List?)?.map((teamJson) => Team.fromJson(teamJson)).toList(),
-      photoURL: json['photoURL'],
-    );
-  }
+  factory Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json); // Keep this one
+
+  Map<String, dynamic> toJson() => _$PlayerToJson(this);
 }
 
 // Sport model
+@JsonSerializable()
 class Sport {
   final String name;
   final List<String> playerPosition;
@@ -644,12 +590,9 @@ class Sport {
     required this.playerPosition,
   });
 
-  factory Sport.fromJson(Map<String, dynamic> json) {
-    return Sport(
-      name: json['name'],
-      playerPosition: List<String>.from(json['playerPosition']),
-    );
-  }
+  factory Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json); // Keep this one
+
+  Map<String, dynamic> toJson() => _$PlayerToJson(this);
 }
 
 // YouthPlayer model
@@ -716,6 +659,7 @@ class YouthPlayer {
 }
 
 // GameStats model
+@JsonSerializable()
 class GameStats {
   final String gameId;
   final int gamePlayed;
@@ -745,22 +689,9 @@ class GameStats {
     this.gameEvents,
   });
 
-  factory GameStats.fromJson(Map<String, dynamic> json) {
-    return GameStats(
-      gameId: json['gameId'],
-      gamePlayed: json['gamePlayed'],
-      currentInning: json['currentInning'],
-      currentOuts: json['currentOuts'],
-      inningDetails: (json['inningDetails'] as List).map((inningJson) => InningDetails.fromJson(inningJson)).toList(),
-      fieldLineUp: (json['fieldLineUp'] as List).map((lineUpJson) => LineUp.fromJson(lineUpJson)).toList(),
-      gameStarted: json['gameStarted'],
-      battingStats: (json['battingStats'] as List?)?.map((statsJson) => BattingStats.fromJson(statsJson)).toList(),
-      pitchingStats: (json['pitchingStats'] as List?)?.map((statsJson) => PitchingStats.fromJson(statsJson)).toList(),
-      onBaseStats: (json['onBaseStats'] as List?)?.map((statsJson) => OnBases.fromJson(statsJson)).toList(),
-      innings: Innings.fromJson(json['innings']),
-      gameEvents: json['gameEvents'],
-    );
-  }
+  factory GameStats.fromJson(Map<String, dynamic> json) => _$GameStatsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$GameStatsToJson(this);
 }
 
 // Innings model (nested within GameStats)

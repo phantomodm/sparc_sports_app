@@ -1,7 +1,67 @@
 // AuthUser model
+import 'package:sparc_sports_app/src/sparc/models/filter_layout_model.dart';
 import 'package:sparc_sports_app/src/sparc/models/league_model.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class AuthUser {
+part 'auth_user.freezed.dart';
+part "auth_user.g.dart";
+
+@freezed
+class AuthUser with _$AuthUser {
+  factory AuthUser({
+    String? id,
+    required String uniqueId,
+    String? userId,
+    String? email,
+    List<Badge>? badges,
+    String? firstName,
+    String? lastName,
+    String? photoURL,
+    required String city,
+    String? displayName,
+    String? configRef,
+    required String state,
+    required String country,
+    required String countryCode,
+    required String postalCode,
+    bool? emailVerified,
+    bool? emailServiceAgreement,
+    required dynamic geohash,
+    required num radius,
+    required num longitude,
+    required num latitude,
+    String? phoneNumber,
+    bool? isAnonymous,
+    List<dynamic>? providerData,
+    required List<String> roles,
+    String? refreshToken,
+    required dynamic createdAt,
+    required int timestamp,
+    required dynamic updatedAt,
+    List<Events>? events,
+    num? reputation,
+    required String status,
+    List<Jobs>? jobs,
+    List<dynamic>? orders,
+    List<AppliedJobs>? applications,
+    List<GroupUser>? groups,
+    List<Follower>? followers,
+    List<Following>? following,
+    required List<dynamic> profession,
+    required List<dynamic> education,
+    required List<dynamic> interests,
+    Player? player,
+    String? phone,
+    String? stripeId,
+    List<dynamic>? playerId,
+    TeamAdmin? coach,
+    String? website,
+    Address? shipping,
+  }) = _AuthUser;
+
+  factory AuthUser.fromJson(Map<String, dynamic> json) => _$AuthUserFromJson(json);
+}
+/*class AuthUser {
   final String? id;
   final String uniqueId;
   final String? userId;
@@ -20,20 +80,20 @@ class AuthUser {
   final bool? emailVerified;
   final bool? emailServiceAgreement;
   final dynamic geohash;
-  final num radius;
-  final num longitude;
-  final num latitude;
+  final num? radius;
+  final num? longitude;
+  final num? latitude;
   final String? phoneNumber;
   final bool? isAnonymous;
   final List<dynamic>? providerData;
   final List<String> roles;
   final String? refreshToken;
   final dynamic createdAt;
-  final int timestamp; // Assuming timestamp will be a number (seconds since epoch)
-  final dynamic updatedAt;
+  final int? timestamp; // Assuming timestamp will be a number (seconds since epoch)
+  final dynamic? updatedAt;
   final List<Events>? events;
   final num? reputation;
-  final String status;
+  final String? status;
   final List<Jobs>? jobs;
   final List<dynamic>? orders;
   final List<AppliedJobs>? applications;
@@ -51,7 +111,7 @@ class AuthUser {
   final String? website;
   final Address? shipping;
 
-  AuthUser({
+  factory AuthUser({
     this.id,
     required this.uniqueId,
     this.userId,
@@ -154,7 +214,22 @@ class AuthUser {
       shipping: json['shipping'] != null ? Address.fromJson(json['shipping']) : null,
     );
   }
-}
+  factory AuthUser.fromMap(Map<String, dynamic> map) {
+    return AuthUser(
+      userId: map['userId'] as String,
+      userName: map['userName'] as String,
+      profileImageUrl: map['profileImageUrl'] as String,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'userId': userId,
+      'userName': userName,
+      'profileImageUrl': profileImageUrl,
+    };
+  }
+}*/
 
 // Address model
 class Address {
@@ -190,71 +265,46 @@ class Address {
 }
 
 // Badge model
-class Badge {
-  final String name;
-  final String description;
-  final String icon;
-  final int? createdAt; // Assuming createdAt will be a number (seconds since epoch)
+@freezed
+class Badge with _$Badge{
+  const factory Badge ({
+     required String name,
+    required String description,
+    required String icon,
+     int? createdAt,
+  }) = _Badge;
+  factory Badge.fromJson(Map<String, dynamic> json) => _$BadgeFromJson(json);
+}
 
-  Badge({
-    required this.name,
-    required this.description,
-    required this.icon,
-    this.createdAt,
+class UserRank {
+  final String userId;
+  final int rank;
+  final int points;
+
+  UserRank({
+    required this.userId,
+    required this.rank,
+    required this.points,
   });
-
-  factory Badge.fromJson(Map<String, dynamic> json) {
-    return Badge(
-      name: json['name'],
-      description: json['description'],
-      icon: json['icon'],
-      createdAt: json['createdAt'],
-    );
-  }
 }
 
 // UserSettings model
-class UserSettings {
-  final FilterLayout filterLayout;
-  final Map<String, bool> notifications;
-  final Map<String, String> privacy;
-  final Map<String, String> preferences;
-  final Map<String, List<dynamic>> contentDiscovery;
-  final Map<String, dynamic> communication;
-  final Map<String, dynamic> personalization;
-  final List<dynamic>? settings;
-  final Map<String, bool> onboarding;
+@freezed
+class UserSettings with _$UserSettings{
+  const factory UserSettings ({
+    String? filterLayout,
+    @Default([]) List<dynamic> notifications,
+    Map<String, String>? privacy,
+    Map<String, String>? preferences,
+    Map<String, List<dynamic>>? contentDiscovery,
+    Map<String, dynamic>? communication,
+    Map<String, dynamic>? personalization,
+    List<dynamic>? settings,
+    @Default(false) Map<String, bool> onboarding,
+  }) = _UserSettings;
 
-  UserSettings({
-    required this.filterLayout,
-    required this.notifications,
-    required this.privacy,
-    required this.preferences,
-    required this.contentDiscovery,
-    required this.communication,
-    required this.personalization,
-    this.settings,
-    required this.onboarding,
-  });
+  factory UserSettings.fromJson(Map<String, dynamic> json) => _$UserSettingsFromJson(json);
 
-  factory UserSettings.fromJson(Map<String, dynamic> json) {
-    return UserSettings(
-      filterLayout: _filterLayoutFromString(json['filterLayout']),
-      notifications: Map<String, bool>.from(json['notifications']),
-      privacy: Map<String, String>.from(json['privacy']),
-      preferences: Map<String, String>.from(json['preferences']),
-      contentDiscovery: Map<String, List<dynamic>>.from(json['contentDiscovery']),
-      communication: Map<String, dynamic>.from(json['communication']),
-      personalization: Map<String, dynamic>.from(json['personalization']),
-      settings: json['settings'],
-      onboarding: Map<String, bool>.from(json['onboarding']),
-    );
-  }
-
-  // Helper function to convert string to FilterLayout enum (assuming you have this enum defined)
-  static FilterLayout _filterLayoutFromString(String? layoutString) {
-    // ... your logic to convert string to FilterLayout
-  }
 }
 
 /// Collective model
@@ -381,6 +431,7 @@ class Collective {
 }
 
 // Events model
+@JsonSerializable()
 class Events {
   final String id;
   final dynamic createdAt;
@@ -406,20 +457,10 @@ class Events {
     required this.userId,
   });
 
-  factory Events.fromJson(Map<String, dynamic> json) {
-    return Events(
-      id: json['id'],
-      createdAt: json['createdAt'],
-      description: json['description'],
-      endDate: json['endDate'],
-      location: json['location'],
-      startDate: json['startDate'],
-      status: json['status'],
-      title: json['title'],
-      updatedAt: json['updatedAt'],
-      userId: json['userId'],
-    );
-  }
+
+  factory Events.fromJson(Map<String, dynamic> json) => _$EventsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$EventsToJson(this);
 }
 
 // Follower model
@@ -440,19 +481,13 @@ class Follower {
     required this.timestamp,
   });
 
-  factory Follower.fromJson(Map<String, dynamic> json) {
-    return Follower(
-      id: json['id'].toString(),
-      userId: json['userId'],
-      followerIds: json['followerIds']?.cast<String>(),
-      photoURL: json['photoURL'],
-      status: json['status'],
-      timestamp: json['timestamp'],
-    );
-  }
+  factory Followers.fromJson(Map<String, dynamic> json) => _$FollowersFromJson(json); // Keep this one
+
+  Map<String, dynamic> toJson() => _$FollowersToJson(this);
 }
 
 // Following model
+@JsonSerializable()
 class Following {
   final int id;
   final String userId;
@@ -470,19 +505,13 @@ class Following {
     required this.timestamp,
   });
 
-  factory Following.fromJson(Map<String, dynamic> json) {
-    return Following(
-      id: json['id'],
-      userId: json['userId'],
-      followingIds: json['followingIds']?.cast<String>(),
-      photoURL: json['photoURL'],
-      status: json['status'],
-      timestamp: json['timestamp'],
-    );
-  }
+  factory Following.fromJson(Map<String, dynamic> json) => _$FollowingFromJson(json); // Keep this one
+
+  Map<String, dynamic> toJson() => _$FollowingToJson(this);
 }
 
 // Jobs model
+@JsonSerializable()
 class Jobs {
   final String id;
   final dynamic createdAt;
@@ -514,26 +543,12 @@ class Jobs {
     this.applicants,
   });
 
-  factory Jobs.fromJson(Map<String, dynamic> json) {
-    return Jobs(
-      id: json['id'],
-      createdAt: json['createdAt'],
-      description: json['description'],
-      experience: json['experience'],
-      location: json['location'],
-      owner: AuthUser.fromJson(json['owner']),
-      salary: json['salary'],
-      status: json['status'],
-      title: json['title'],
-      type: json['type'],
-      updatedAt: json['updatedAt'],
-      userId: json['userId'],
-      applicants: (json['applicants'] as List?)?.map((applicantJson) => AuthUser.fromJson(applicantJson)).toList(),
-    );
-  }
+  factory Jobs.fromJson(Map<String, dynamic> json) => _$JobsFromJson(json);
+  Map<String, dynamic> toJson() => _$JobsToJson(this);
 }
 
 // AppliedJobs model
+@JsonSerializable()
 class AppliedJobs {
   final String id;
   final dynamic createdAt;
@@ -579,6 +594,8 @@ class AppliedJobs {
       userId: json['userId'],
     );
   }
+  factory AppliedJobs.fromJson(Map<String, dynamic> json) => _$AppliedJobsFromJson(json);
+  Map<String, dynamic> toJson() => _$AppliedJobsToJson(this);
 }
 
 // TeamAdmin model
@@ -612,6 +629,7 @@ class TeamAdmin {
 }
 
 // GroupUser model
+@JsonSerializable()
 class GroupUser {
   final String groupId;
   final String groupName;
@@ -635,19 +653,9 @@ class GroupUser {
     required this.canPost,
   });
 
-  factory GroupUser.fromJson(Map<String, dynamic> json) {
-    return GroupUser(
-      groupId: json['groupId'],
-      groupName: json['groupName'],
-      groupDescription: json['groupDescription'],
-      groupImageUrl: json['groupImageUrl'],
-      groupUrl: json['groupUrl'],
-      joined: json['joined'],
-      updatedAt: json['updatedAt'],
-      administrator: json['administrator'],
-      canPost: json['canPost'],
-    );
-  }
+  factory GroupUser.fromJson(Map<String, dynamic> json) => _$GroupUserFromJson(json); // Keep this one
+
+  Map<String, dynamic> toJson() => _$GroupUserToJson(this);
 }
 
 // Sale model

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:sparc_sports_app/bloc_observer.dart';
 import 'package:sparc_sports_app/src/core/bloc/locator.dart';
 import 'package:sparc_sports_app/src/core/bloc/theme_bloc.dart';
@@ -18,6 +19,7 @@ import 'package:woosignal/woosignal.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); //GetIt Instances
+  await Hive.initFlutter();
   setupLocator();
   await dotenv.load(fileName: '.env');
   await WooSignal.instance
@@ -127,6 +129,7 @@ class _SparcAppState extends State<SparcApp> {
         stream: themeBloc.themeStream,
         initialData: lightTheme, // Provide an initial theme
         builder: (context, snapshot) {
+          _currentTheme = snapshot.data ?? lightTheme;
           return MaterialApp(
             title: 'Sparc Sports App',
             localizationsDelegates: const [

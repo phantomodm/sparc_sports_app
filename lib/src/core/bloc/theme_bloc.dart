@@ -1,15 +1,19 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sparc_sports_app/src/core/themes/app_themes.dart';
-
+import 'package:rxdart/rxdart.dart';
 
 class ThemeBloc {
-  final _themeController = StreamController<ThemeData>.broadcast();
-  Stream<ThemeData> get themeStream => _themeController.stream;
+  final _themeSubject = BehaviorSubject<ThemeData>.seeded(lightTheme);
+
+  Stream<ThemeData> get themeStream => _themeSubject.stream;
+
+  ThemeData get currentTheme => _themeSubject.value;
 
   void changeTheme(ThemeData newTheme) {
-    _themeController.sink.add(newTheme);
+    _themeSubject.add(newTheme);
   }
+
   void changeFontSize(double newFontSize, ThemeData currentTheme) {
     TextTheme newTextTheme = currentTheme.textTheme.copyWith(
       displayLarge: currentTheme.textTheme.displayLarge?.copyWith(
@@ -26,13 +30,12 @@ class ThemeBloc {
       ),
       // ... update other text styles as needed
     );
-    _themeController.sink.add(currentTheme.copyWith(textTheme: newTextTheme));
+    _themeSubject.add(currentTheme.copyWith(textTheme: newTextTheme));
   }
 
   void toggleDarkMode(ThemeData currentTheme) {
-    _themeController.sink.add(
-      currentTheme.brightness == Brightness.light ? darkTheme : lightTheme,
-    );
+    _themeSubject
+        .add(currentTheme.brightness == Brightness.light ? darkTheme : lightTheme);
   }
 
   void toggleLargeFonts(bool isEnabled, ThemeData currentTheme) {
@@ -48,28 +51,28 @@ class ThemeBloc {
     )
         : currentTheme.textTheme; // Revert to the original textTheme
 
-    _themeController.sink.add(currentTheme.copyWith(textTheme: newTextTheme));
+    _themeSubject.add(currentTheme.copyWith(textTheme: newTextTheme));
   }
 
   void toggleHighContrast(bool isEnabled, ThemeData currentTheme) {
     if (isEnabled) {
       // Apply high contrast theme based on current brightness
-      _themeController.sink.add(
-        currentTheme.brightness == Brightness.light
-            ? highContrastLightTheme
-            : highContrastDarkTheme,
-      );
+      _themeSubject.add(currentTheme.brightness == Brightness.light
+          ? highContrastLightTheme
+          : highContrastDarkTheme);
     } else {
       // Revert to the original theme based on current brightness
-      _themeController.sink.add(
-        currentTheme.brightness == Brightness.light ? lightTheme : darkTheme,
-      );
+      _themeSubject.add(currentTheme.brightness == Brightness.light
+          ? lightTheme
+          : darkTheme);
     }
   }
 
-  // --------------------------------------
+  void updateTheme(ThemeData newTheme) {
+    _themeSubject.add(newTheme);
+  }
 
   void dispose() {
-    _themeController.close();
+    _themeSubject.close();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sparc_sports_app/src/core/bloc/theme_bloc.dart';
 
 class AppFonts {
   static const String headingFont = 'Bebas Neue';
@@ -58,6 +59,74 @@ class AppFonts {
     // ... other high contrast properties for dark theme
   );
 
+}
+
+class AppThemes {
+  static ThemeData get lightTheme => lightTheme;
+  static ThemeData get darkTheme => darkTheme;
+
+  static ThemeBloc _themeBloc = ThemeBloc(); // Add this line
+
+  // Access theme properties like this:
+  // Access theme properties like this:
+  static TextStyle? get headline5 =>
+      _themeBloc.currentTheme.textTheme.headlineMedium?.copyWith(
+        fontFamily: AppFonts.headingFont,
+        fontWeight: AppFonts.headingFontWeight,
+        color: _themeBloc.currentTheme.brightness == Brightness.light
+            ? Colors.black
+            : Colors.white,
+      );
+  static TextStyle? get headline6 =>
+      _themeBloc.currentTheme.textTheme.headlineLarge?.copyWith(
+        fontFamily: AppFonts.headingFont,
+        fontWeight: AppFonts.headingFontWeight,
+        letterSpacing: AppFonts.headingLetterSpacing,
+        color: _themeBloc.currentTheme.brightness == Brightness.light
+            ? Colors.black
+            : Colors.white,
+      );
+  static TextStyle? get subtitle1 =>
+      _themeBloc.currentTheme.textTheme.headlineSmall?.copyWith(
+        fontFamily: AppFonts.bodyFont,
+        fontWeight: FontWeight.w500,
+        color: _themeBloc.currentTheme.brightness == Brightness.light
+            ? Colors.black87
+            : Colors.white70,
+      );
+  static TextStyle? get subtitle2 =>
+      _themeBloc.currentTheme.textTheme.bodyMedium?.copyWith(
+        fontFamily: AppFonts.bodyFont,
+        height: AppFonts.bodyLineHeight,
+        color: _themeBloc.currentTheme.brightness == Brightness.light
+            ? Colors.black54
+            : Colors.white60,
+      );
+
+  static TextStyle? get bodyText1 =>
+      _themeBloc.currentTheme.textTheme.bodyLarge?.copyWith(
+        fontFamily: AppFonts.bodyFont,
+        color: _themeBloc.currentTheme.brightness == Brightness.light
+            ? Colors.black
+            : Colors.white,
+      );
+
+  static TextStyle? get bodyText2 =>
+      _themeBloc.currentTheme.textTheme.bodyMedium?.copyWith(
+        fontFamily: AppFonts.bodyFont,
+        color: _themeBloc.currentTheme.brightness == Brightness.light
+            ? Colors.black87
+            : Colors.white70,
+      );
+
+  static TextStyle? get caption =>
+      _themeBloc.currentTheme.textTheme.bodySmall?.copyWith(
+        fontFamily: AppFonts.bodyFont,
+        color: _themeBloc.currentTheme.brightness == Brightness.light
+            ? Colors.black54
+            : Colors.white60,
+      );
+  static Color? get primaryColor => _themeBloc.currentTheme.primaryColor;
 }
 
 final ThemeData darkTheme = ThemeData(

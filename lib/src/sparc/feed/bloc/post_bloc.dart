@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sparc_sports_app/src/auth/auth_user.dart';
 
 import 'package:sparc_sports_app/src/sparc/models/post_model.dart';
 
@@ -117,7 +118,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       final data = doc.data();
       return SparcPost(
         id: doc.id,
-        user: User(
+        user: AuthUser(
           id: data['userId'],
           name: data['userName'],
           profileImageUrl: data['userProfileImageUrl'],
